@@ -13,4 +13,6 @@ public interface Cache {
 	void set(UUID key, @NotNull String value);
 
 	int cacheSize();
+
+	CacheStats getStats();
 }

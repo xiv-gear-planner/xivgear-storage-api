@@ -14,14 +14,18 @@ import java.util.function.Function;
 
 public class CacheTest {
 
+	private static GzipCacheImpl createCache() {
+		return new GzipCacheImpl(new GzipCacheConfig(100, 1000, 0.80f));
+	}
+
 	/**
 	 * Test that the cache will be pruned above a certain size after waiting
 	 *
-	 * @throws InterruptedException
+	 * @throws InterruptedException unused
 	 */
 	@Test
 	void testCachePruning() throws InterruptedException {
-		GzipCacheImpl cache = new GzipCacheImpl(100, 1000);
+		GzipCacheImpl cache = createCache();
 		Thread.sleep(50);
 		AtomicInteger counter = new AtomicInteger();
 		Function<UUID, String> conv = uuid -> {
@@ -77,11 +81,11 @@ public class CacheTest {
 	/**
 	 * Test that the cache will not be pruned if it does not hit the size threshold
 	 *
-	 * @throws InterruptedException
+	 * @throws InterruptedException unused
 	 */
 	@Test
 	void testCacheNoPrune() throws InterruptedException {
-		GzipCacheImpl cache = new GzipCacheImpl(100, 1000);
+		GzipCacheImpl cache = createCache();
 		Thread.sleep(50);
 		AtomicInteger counter = new AtomicInteger();
 		Function<UUID, String> conv = uuid -> {
@@ -107,7 +111,7 @@ public class CacheTest {
 
 	@Test
 	void testCacheAfterPassiveSet() {
-		GzipCacheImpl cache = new GzipCacheImpl(100, 1000);
+		GzipCacheImpl cache = createCache();
 		AtomicInteger counter = new AtomicInteger();
 		Function<UUID, String> conv = uuid -> {
 			counter.incrementAndGet();
@@ -124,7 +128,7 @@ public class CacheTest {
 
 	@Test
 	void testCacheAfterActiveSet() {
-		GzipCacheImpl cache = new GzipCacheImpl(100, 1000);
+		GzipCacheImpl cache = createCache();
 		AtomicInteger counter = new AtomicInteger();
 		Function<UUID, String> conv = uuid -> {
 			counter.incrementAndGet();
@@ -135,9 +139,9 @@ public class CacheTest {
 		assertEquals(0, counter.get());
 		String s2 = cache.computeIfAbsent(new UUID(0, 0), conv);
 		assertEquals(0, counter.get());
-		assertEquals(s2, val);
+		assertEquals(val, s2);
 		// 'foo' isn't long enough to compress, so don't
-		assertSame(s2, val);
+		assertSame(val, s2);
 	}
 
 	/**
@@ -146,7 +150,7 @@ public class CacheTest {
 	@Test
 	void testCacheCompression() {
 		String input = StringUtils.repeat('a', 20_000);
-		GzipCacheImpl cache = new GzipCacheImpl(100, 1000);
+		GzipCacheImpl cache = createCache();
 		UUID uuid = new UUID(0, 0);
 		AtomicInteger counter = new AtomicInteger();
 		Function<UUID, String> func = ignored -> {
@@ -174,17 +178,17 @@ public class CacheTest {
 	void testCacheCompressionBypass() {
 		// Short string, not worth compressing
 		String input = "foo";
-		GzipCacheImpl cache = new GzipCacheImpl(100, 1000);
+		GzipCacheImpl cache = createCache();
 		UUID uuid = new UUID(0, 0);
 		String result = cache.computeIfAbsent(uuid, ignored -> input);
 		// This should not get compressed. It should be the exact same string instance.
-		assertEquals(result, input);
-		assertSame(result, input);
+		assertEquals(input, result);
+		assertSame(input, result);
 	}
 
 	@Test
 	void testCacheIgnoresNull() {
-		GzipCacheImpl cache = new GzipCacheImpl(100, 1000);
+		GzipCacheImpl cache = createCache();
 		String out = cache.computeIfAbsent(UUID.randomUUID(), ignored -> null);
 		assertNull(out);
 		assertEquals(0, cache.cacheSize());

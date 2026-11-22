@@ -10,23 +10,26 @@ import jakarta.inject.Singleton;
 @Requires(notEnv = "test")
 final class OracleNoSqlDbFactory {
 
+	private OracleNoSqlDbFactory() {
+	}
+
 	@Singleton
 	@Named("primary")
-	OracleNoSqlDb primary(
+	static OracleNoSqlDb primary(
 			DbConfig config,
 			BackupConfig backupConfig,
 			OracleCloudAuthConfigurationProperties authConfig) {
-		return new OracleNoSqlDb(config, backupConfig, authConfig);
+		return new OracleNoSqlDb("primary", config, backupConfig, authConfig);
 	}
 
 	@Singleton
 	@Named("secondary")
 	@Requires(property = "oracle-nosql-secondary.endpoint")
-	OracleNoSqlDb secondary(
+	static OracleNoSqlDb secondary(
 			SecondaryDbConfig config,
 			BackupConfig backupConfig,
 			OracleCloudAuthConfigurationProperties authConfig) {
-		return new OracleNoSqlDb(configToDbConfig(config), backupConfig, authConfig);
+		return new OracleNoSqlDb("secondary", configToDbConfig(config), backupConfig, authConfig);
 	}
 
 	private static DbConfig configToDbConfig(SecondaryDbConfig config) {

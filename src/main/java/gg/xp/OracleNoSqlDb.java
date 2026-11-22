@@ -27,20 +27,26 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 
 public class OracleNoSqlDb implements Database {
 
 	private static final Logger log = LoggerFactory.getLogger(OracleNoSqlDb.class);
 
+	private final String databaseName;
 	private final NoSQLHandle handle;
 	private final String tableName;
 	private final BackupConfig backupConfig;
+	private final LongAdder retrievals = new LongAdder();
+	private final LongAdder creations = new LongAdder();
 
 	public OracleNoSqlDb(
+			String databaseName,
 			DbConfig config,
 			BackupConfig backupConfig,
 			OracleCloudAuthConfigurationProperties authConfig) {
+		this.databaseName = databaseName;
 		handle = createHandle(config, authConfig);
 		tableName = validateTableName(config.tableName());
 		this.backupConfig = backupConfig;
@@ -106,6 +112,7 @@ public class OracleNoSqlDb implements Database {
 
 	@Override
 	public @Nullable String getShortlink(UUID uuid) {
+		retrievals.increment();
 		GetResult linkuuid = handle.get(new GetRequest()
 				.setTableName(tableName)
 				.setKey(new MapValue().put("linkuuid", uuid.toString())));
@@ -120,11 +127,20 @@ public class OracleNoSqlDb implements Database {
 
 	@Override
 	public void putShortLink(UUID uuid, String payload) {
+		creations.increment();
 		handle.put(new PutRequest().setTableName(tableName).setValue(
 				new MapValue()
 						.put("linkuuid", uuid.toString())
 						.put("hash", (long) payload.hashCode())
 						.putFromJson("datavalue", payload, new JsonOptions())));
+	}
+
+	public String databaseName() {
+		return databaseName;
+	}
+
+	public DatabaseStats getStats() {
+		return new DatabaseStats(retrievals.sum(), creations.sum());
 	}
 
 	void iterateAll(Consumer<MapValue> consumer) {

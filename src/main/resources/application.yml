@@ -4,8 +4,11 @@ micronaut:
   server:
     port: ${port:8080}
     cors:
-      # TODO: lock down origins
       enabled: true
+      configurations:
+        all:
+          allowed-origins-regex: ".*"
+          allow-credentials: false
 
 oracle-nosql:
   endpoint: "https://nosql.us-sanjose-1.oci.oraclecloud.com:443"
@@ -31,3 +34,4 @@ gear-planner:
   cache:
     max-cache-size: 5000
     wakeup-interval: 10000
+    worst-compress-ratio: 0.80

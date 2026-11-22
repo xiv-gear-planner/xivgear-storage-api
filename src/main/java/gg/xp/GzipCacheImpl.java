@@ -20,6 +20,7 @@ import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -29,19 +30,23 @@ import java.util.zip.GZIPOutputStream;
 public class GzipCacheImpl implements Cache {
 
 	private static final Logger log = LoggerFactory.getLogger(GzipCacheImpl.class);
-	private static final float WORST_COMPRESS_RATIO = 0.80f;
 
 	private final Map<UUID, CacheEntry> map = new ConcurrentHashMap<>();
+	private final float worstCompressRatio;
+	private final AtomicLong hits = new AtomicLong();
+	private final AtomicLong misses = new AtomicLong();
+	private final AtomicLong prunedEntries = new AtomicLong();
 	private final Thread pruner;
 	private volatile boolean stop;
 
 	@Inject
 	public GzipCacheImpl(GzipCacheConfig config) {
-		this(config.maxCacheSize(), config.wakeupInterval());
+		this(config.maxCacheSize(), config.wakeupInterval(), config.worstCompressRatio());
 	}
 
-	public GzipCacheImpl(int maxCacheSize, int wakeupInterval) {
-		pruner = Thread.ofVirtual().unstarted(() -> {
+	private GzipCacheImpl(int maxCacheSize, int wakeupInterval, float worstCompressRatio) {
+		this.worstCompressRatio = worstCompressRatio;
+		pruner = Thread.startVirtualThread(() -> {
 			while (!stop) {
 				try {
 					int sizeBefore = map.size();
@@ -51,11 +56,16 @@ public class GzipCacheImpl implements Cache {
 						LongSummaryStatistics lruStats = map.values().stream().mapToLong(CacheEntry::lastUsed).filter(l -> l > 0).summaryStatistics();
 						long lruCutoff = (long) lruStats.getAverage();
 						int lfuCutoff = (int) lfuStats.getAverage();
-						map.entrySet().removeIf(e -> {
-							CacheEntry val = e.getValue();
+						long removedCount = 0;
+						for (var entry : map.entrySet()) {
+							CacheEntry val = entry.getValue();
 							long lastUsed = val.lastUsed();
-							return (lastUsed > 0 && lastUsed < lruCutoff) || val.usedCount < lfuCutoff;
-						});
+							if (((lastUsed > 0 && lastUsed < lruCutoff) || val.usedCount < lfuCutoff)
+									&& map.remove(entry.getKey(), val)) {
+								removedCount++;
+							}
+						}
+						prunedEntries.addAndGet(removedCount);
 						log.info("Pruning cache pruned ({} => {})", sizeBefore, map.size());
 					}
 				}
@@ -72,7 +82,6 @@ public class GzipCacheImpl implements Cache {
 				}
 			}
 		});
-		pruner.start();
 	}
 
 	@PreDestroy
@@ -88,9 +97,9 @@ public class GzipCacheImpl implements Cache {
 		final byte[] compressed;
 		final String uncompressed;
 
-		private CacheEntry(String value) {
+		private CacheEntry(String value, float worstCompressRatio) {
 			byte[] compressed = compressStringToBytes(value);
-			if (compressed.length < (value.length() * WORST_COMPRESS_RATIO)) {
+			if (compressed.length < (value.length() * worstCompressRatio)) {
 				this.compressed = compressed;
 				this.uncompressed = null;
 			}
@@ -141,6 +150,7 @@ public class GzipCacheImpl implements Cache {
 		map.compute(key, (uuid, current) -> {
 			// No current cache entry
 			if (current == null) {
+				misses.incrementAndGet();
 				String newValue = getter.apply(uuid);
 				// Not found in live lookup
 				if (newValue == null) {
@@ -148,9 +158,10 @@ public class GzipCacheImpl implements Cache {
 				}
 				// Found in live lookup
 				result[0] = newValue;
-				return new CacheEntry(newValue);
+				return new CacheEntry(newValue, worstCompressRatio);
 			}
 			// Already cached - bump timestamp and return it
+			hits.incrementAndGet();
 			current.update();
 			result[0] = current.getValue();
 			return current;
@@ -160,12 +171,17 @@ public class GzipCacheImpl implements Cache {
 
 	@Override
 	public void set(UUID key, @NotNull String value) {
-		map.put(key, new CacheEntry(value));
+		map.put(key, new CacheEntry(value, worstCompressRatio));
 	}
 
 	@Override
 	public int cacheSize() {
 		return map.size();
+	}
+
+	@Override
+	public CacheStats getStats() {
+		return new CacheStats(cacheSize(), hits.get(), misses.get(), prunedEntries.get());
 	}
 
 	void clear() {
