@@ -6,3 +6,12 @@ oracle-nosql:
   endpoint: https://example.invalid
   table-name: test-shortlinks
   compartment-id: test-compartment
+
+# Micronaut's OCI autoconfiguration still starts during tests despite the
+# NoSQL database being replaced by TestDatabaseFactory.
+# Trying this as a workaround.
+oci:
+  tenant-id: test-tenant
+  user-id: test-user
+  fingerprint: 00:00:00:00:00:00
+  private-key-file: file:unused-in-tests.pem
