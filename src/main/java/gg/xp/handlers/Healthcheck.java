@@ -9,11 +9,9 @@ import jakarta.inject.Singleton;
 @Singleton
 public final class Healthcheck {
 
-	private Healthcheck() {
-	}
-
+	@SuppressWarnings("MethodMayBeStatic")
 	@Get(produces = MediaType.TEXT_PLAIN)
-	public static String health() {
+	public String health() {
 		return "Health Check OK\n";
 	}
 }

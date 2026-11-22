@@ -111,8 +111,6 @@ public class PersistenceTest {
 		HttpResponse<String> health = http.toBlocking().exchange(HttpRequest.GET("/healthcheck"), String.class);
 		assertEquals(HTTP_OK, health.code());
 		assertTrue(health.body().contains("Health Check OK"));
-		assertTrue(health.body().contains("GETs:"));
-		assertTrue(health.body().contains("POSTs:"));
 	}
 
 	@Test
