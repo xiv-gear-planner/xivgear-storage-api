@@ -30,7 +30,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build, Test, and Generate Dockerfile
-        run: ./gradlew --no-daemon build dockerfile
+        run: ./gradlew --no-daemon --stacktrace --info build dockerfile
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
