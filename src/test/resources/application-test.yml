@@ -1,0 +1,15 @@
+micronaut:
+  server:
+    port: 8085
+
+pemPath: classpath:test_set.json
+
+oracle-nosql:
+  endpoint: https://example.invalid
+  table-name: test-shortlinks
+  compartment-id: test-compartment
+
+oci:
+  tenant-id: test-tenant
+  user-id: test-user
+  fingerprint: test-fingerprint

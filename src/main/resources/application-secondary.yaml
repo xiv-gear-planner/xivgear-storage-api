@@ -1,0 +1,4 @@
+oracle-nosql-secondary:
+  endpoint: "https://nosql.us-sanjose-1.oci.oraclecloud.com:443"
+  table-name: "shortlinks"
+  compartment-id: ${secondaryCompartment}
