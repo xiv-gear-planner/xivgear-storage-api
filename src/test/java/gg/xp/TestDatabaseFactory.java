@@ -2,7 +2,6 @@ package gg.xp;
 
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Replaces;
-import io.micronaut.oraclecloud.core.TenancyIdProvider;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,11 +29,4 @@ final class TestDatabaseFactory {
 		};
 	}
 
-	// For some reason, pipelines are failing because it tries to load the tenancy ID from application.yaml, which
-	// doesn't work because the unit tests aren't supposed to actually be cconneccting to OCI.
-	@Singleton
-	@Replaces(TenancyIdProvider.class)
-	TenancyIdProvider tenancyIdProvider() {
-		return () -> "test-tenant";
-	}
 }
