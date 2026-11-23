@@ -29,8 +29,14 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
-      - name: Build, Test, and Generate Dockerfile
-        run: ./gradlew --no-daemon --stacktrace --info build dockerfile
+      - name: Test
+        run: ./gradlew --no-daemon --stacktrace --info test
+
+      - name: Build
+        run: ./gradlew --no-daemon --stacktrace --info build
+
+      - name: Dockerfile
+        run: ./gradlew --no-daemon --stacktrace --info dockerfile
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
