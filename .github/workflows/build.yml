@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
@@ -29,14 +30,8 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
-      - name: Test
-        run: ./gradlew --no-daemon --stacktrace --info test
-
-      - name: Build
-        run: ./gradlew --no-daemon --stacktrace --info build
-
-      - name: Dockerfile
-        run: ./gradlew --no-daemon --stacktrace --info dockerfile
+      - name: Test and publish package
+        run: ./gradlew --no-daemon --stacktrace --info build dockerfile
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
