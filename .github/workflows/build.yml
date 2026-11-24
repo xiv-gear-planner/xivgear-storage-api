@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: xivgear-storage-api
+  IMAGE_NAME: ${{ github.repository_owner }}/xivgear-storage-api
 
 jobs:
   build:
@@ -58,7 +58,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and export
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: build/docker/main/
           push: true
