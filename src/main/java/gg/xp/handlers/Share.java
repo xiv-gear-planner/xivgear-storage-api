@@ -2,13 +2,13 @@ package gg.xp.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micronaut.context.annotation.Context;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
-import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.intellij.lang.annotations.Language;
@@ -16,7 +16,7 @@ import org.intellij.lang.annotations.Language;
 import java.util.UUID;
 
 @Controller("/share")
-@Singleton
+@Context
 public class Share {
 	private static final String DEFAULT_NAME = "XivGear - FFXIV Gear Planner";
 	private static final String DEFAULT_DESC = "XivGear is an advanced and easy-to-use FFXIV gear planner/set builder with built-in simulation support.";

@@ -1,21 +1,20 @@
 package gg.xp.handlers;
 
 import gg.xp.Cache;
-import gg.xp.CacheStats;
 import gg.xp.DatabaseStats;
 import gg.xp.OracleNoSqlDb;
 import gg.xp.Stats;
 import io.micronaut.context.BeanContext;
+import io.micronaut.context.annotation.Context;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
-import jakarta.inject.Singleton;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 @Controller("/statsz")
-@Singleton
+@Context
 public class StatsController {
 	private final Stats stats;
 	private final Cache cache;

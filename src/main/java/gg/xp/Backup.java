@@ -1,6 +1,7 @@
 package gg.xp;
 
 import io.micronaut.context.ApplicationContext;
+import io.micronaut.context.annotation.Context;
 import jakarta.inject.Singleton;
 import jakarta.inject.Named;
 import oracle.nosql.driver.values.MapValue;

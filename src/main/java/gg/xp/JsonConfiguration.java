@@ -1,12 +1,12 @@
 package gg.xp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Factory;
-import jakarta.inject.Singleton;
 
 @Factory
 public final class JsonConfiguration {
-	@Singleton
+	@Context
 	ObjectMapper objectMapper() {
 		return new ObjectMapper();
 	}

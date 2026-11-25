@@ -1,9 +1,8 @@
 package gg.xp;
 
 import io.micronaut.context.annotation.Context;
-import jakarta.inject.Inject;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Singleton;
+import jakarta.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -25,7 +24,6 @@ import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-@Singleton
 @Context
 public class GzipCacheImpl implements Cache {
 
@@ -61,7 +59,7 @@ public class GzipCacheImpl implements Cache {
 							CacheEntry val = entry.getValue();
 							long lastUsed = val.lastUsed();
 							if (((lastUsed > 0 && lastUsed < lruCutoff) || val.usedCount < lfuCutoff)
-									&& map.remove(entry.getKey(), val)) {
+							    && map.remove(entry.getKey(), val)) {
 								removedCount++;
 							}
 						}

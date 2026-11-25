@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gg.xp.Cache;
 import gg.xp.Database;
-import gg.xp.Stats;
 import gg.xp.ShortlinkConfig;
+import gg.xp.Stats;
+import io.micronaut.context.annotation.Context;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -17,7 +18,6 @@ import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
-import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Controller("/shortlink")
-@Singleton
+@Context
 @ExecuteOn(TaskExecutors.BLOCKING)
 public class Shortlink {
 

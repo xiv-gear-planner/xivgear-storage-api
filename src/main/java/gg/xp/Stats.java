@@ -1,12 +1,12 @@
 package gg.xp;
 
-import jakarta.inject.Singleton;
+import io.micronaut.context.annotation.Context;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Singleton
+@Context
 public class Stats {
 
 	private final Instant startedAt = Instant.now();

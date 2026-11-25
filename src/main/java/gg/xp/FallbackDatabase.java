@@ -1,10 +1,10 @@
 package gg.xp;
 
+import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 
 import java.util.UUID;
 
@@ -15,7 +15,7 @@ import java.util.UUID;
  * shortlink. Writes always go to the primary store, so the secondary database
  * remains a read-only fallback.</p>
  */
-@Singleton
+@Context
 @Primary
 @Requires(notEnv = "test")
 public class FallbackDatabase implements Database {

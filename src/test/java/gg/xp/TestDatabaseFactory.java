@@ -1,8 +1,8 @@
 package gg.xp;
 
+import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Replaces;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 final class TestDatabaseFactory {
 	private final Map<UUID, String> backing = new ConcurrentHashMap<>();
 
-	@Singleton
+	@Context
 	@Replaces(Database.class)
 	Database database() {
 		return new Database() {

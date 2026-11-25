@@ -1,5 +1,6 @@
 package gg.xp;
 
+import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.oraclecloud.core.OracleCloudAuthConfigurationProperties;
@@ -13,7 +14,7 @@ final class OracleNoSqlDbFactory {
 	private OracleNoSqlDbFactory() {
 	}
 
-	@Singleton
+	@Context
 	@Named("primary")
 	static OracleNoSqlDb primary(
 			DbConfig config,
@@ -22,7 +23,7 @@ final class OracleNoSqlDbFactory {
 		return new OracleNoSqlDb("primary", config, backupConfig, authConfig);
 	}
 
-	@Singleton
+	@Context
 	@Named("secondary")
 	@Requires(property = "oracle-nosql-secondary.endpoint")
 	static OracleNoSqlDb secondary(
