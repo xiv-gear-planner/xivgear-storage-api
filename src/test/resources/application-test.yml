@@ -9,10 +9,10 @@ oracle-nosql:
 
 # Keep the OCI auto-configuration satisfied without using a machine-local
 # ~/.oci/config or real credentials. Database access is replaced in tests.
-oci:
-  config:
-    enabled: false
-  tenant-id: test-tenant
-  user-id: test-user
-  fingerprint: 00:00:00:00:00:00
-  private-key-file: classpath:oci-test-private-key.pem
+#oci:
+#  config:
+#    enabled: false
+#  tenant-id: test-tenant
+#  user-id: test-user
+#  fingerprint: 00:00:00:00:00:00
+#  private-key-file: classpath:oci-test-private-key.pem
