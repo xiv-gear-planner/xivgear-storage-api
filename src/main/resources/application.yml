@@ -10,6 +10,28 @@ micronaut:
           allowed-origins-regex: ".*"
           allow-credentials: false
 
+  metrics:
+    enabled: true
+    binders:
+      jvm:
+        enabled: true
+      processor:
+        enabled: true
+      uptime:
+        enabled: true
+    export:
+      prometheus:
+        enabled: true
+
+endpoints:
+  all:
+    enabled: false
+    sensitive: true
+  prometheus:
+    enabled: true
+    sensitive: false
+
+
 oracle-nosql:
   endpoint: "https://nosql.us-sanjose-1.oci.oraclecloud.com:443"
   table-name: "shortlinks"

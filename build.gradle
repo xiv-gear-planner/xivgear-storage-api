@@ -35,6 +35,14 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+// Micrometer
+dependencies {
+	implementation("io.micronaut.micrometer:micronaut-micrometer-core")
+	implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
+	implementation("io.micronaut:micronaut-management")
+}
+
+
 application {
 	mainClass = "gg.xp.GearPlanServerMain"
 	applicationDefaultJvmArgs = ["-XX:+UseCompactObjectHeaders"]
