@@ -46,7 +46,7 @@ public class Shortlink {
 		this.config = config;
 	}
 
-	@Post(consumes = MediaType.APPLICATION_JSON, produces = MediaType.TEXT_PLAIN)
+	@Post(produces = MediaType.TEXT_PLAIN)
 	public MutableHttpResponse<String> makeShortLink(@Body byte[] body) {
 		if (body.length > config.maxUploadBytes()) {
 			return HttpResponse.status(HttpStatus.valueOf(413));
@@ -55,6 +55,9 @@ public class Shortlink {
 			JsonNode json = mapper.readTree(body);
 			if (json == null) {
 				return HttpResponse.badRequest();
+			}
+			if (!json.isObject()) {
+				return HttpResponse.badRequest("Not a JSON object");
 			}
 			stats.postCount.incrementAndGet();
 			UUID uuid = UUID.randomUUID();
