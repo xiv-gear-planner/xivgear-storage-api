@@ -46,7 +46,7 @@ public class Shortlink {
 		this.config = config;
 	}
 
-	@Post(produces = MediaType.TEXT_PLAIN)
+	@Post(produces = MediaType.TEXT_PLAIN, consumes = MediaType.ALL)
 	public MutableHttpResponse<String> makeShortLink(@Body byte[] body) {
 		if (body.length > config.maxUploadBytes()) {
 			return HttpResponse.status(HttpStatus.valueOf(413));
